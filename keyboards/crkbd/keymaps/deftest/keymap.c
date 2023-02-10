@@ -30,6 +30,7 @@ enum custom_keycodes {
   LOWER,
   RAISE,
   ADJUST,
+  CTD,
 };
 enum combos { DF_LANG2,
   JK_LANG1,
@@ -53,7 +54,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        KC_ESC,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                          KC_Y,    KC_U,    KC_I,    KC_O,   KC_P, KC_BSLS,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-    CTL_T(KC_TAB),    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_LEAD,
+    CTD,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_LEAD,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------| 
   KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
@@ -92,7 +93,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
         KC_ESC, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, XXXXXXX, XXXXXXX,                      XXXXXXX, KC_LBRC, KC_RBRC, XXXXXXX, XXXXXXX, XXXXXXX,
+      RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, CTD, XXXXXXX,                      XXXXXXX, KC_LBRC, KC_RBRC, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, XXXXXXX, XXXXXXX,                     XXXXXXX,KC_LCBR, KC_RCBR,  XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
@@ -106,7 +107,8 @@ static bool raise_pressed = false;
 static uint16_t raise_pressed_time = 0;
 
 // ctrl + h delete
-//static bool ctrl_pressed = false;
+static bool ctd_pressed = false;
+static uint16_t ctd_pressed_time = 0;
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -153,6 +155,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+    case CTD:
+              if (record->event.pressed) {
+	             ctd_pressed = true;
+		     ctd_pressed_time = record->event.time;
+		     register_code(KC_LCTL);
+              } else {
+		     unregister_code(KC_LCTL);
+	             ctd_pressed = false;
+                     if (TIMER_DIFF_16(record->event.time, ctd_pressed_time) < TAPPING_TERM) {
+                        register_code(KC_TAB); // for macOS
+		        unregister_code(KC_TAB);
+		     }
+	      }
+
+			    		
+              return false;
 
     case KC_ESC:
               if (record->event.pressed) {
@@ -161,9 +179,28 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                       register_code(KC_ESC);
               } else {
                       unregister_code(KC_ESC);
-
 	      }
               return false;
+    default:
+	      if (ctd_pressed){
+		      switch(keycode){
+			      case KC_H:
+				      if (record->event.pressed){
+					      unregister_code(KC_LCTL);
+					      register_code(KC_BSPC);
+				      }else{
+					      unregister_code(KC_BSPC);
+					      if(ctd_pressed){
+						      register_code(KC_LCTL);
+					      }
+
+				      }
+				      return false;
+				      break;
+
+		      }
+
+	      }
 
   }
   //if (record->event.pressed) {
@@ -196,13 +233,12 @@ void matrix_scan_user(void) {
   }
 }
 
-/*
-const key_override_t backspace_key_override = ko_make_basic(MOD_MASK_CTRL, KC_H, KC_BSPC);
-
-// This globally defines all key overrides to be used
-const key_override_t **key_overrides = (const key_override_t *[]){
-	&backspace_key_override,
-	NULL // Null terminate the array of overrides!
-};
-
-*/
+//const key_override_t backspace_key_override = ko_make_basic(MOD_MASK_CTRL, KC_H, KC_BSPC);
+////const key_override_t backspace_key_override = ko_make_with_layers_and_negmods(0, MOD_MASK_CTRL, KC_H, ~0, (uint8_t) MOD_MASK_CTRL);
+//
+//// This globally defines all key overrides to be used
+//const key_override_t **key_overrides = (const key_override_t *[]){
+//	&backspace_key_override,
+//	NULL // Null terminate the array of overrides!
+//};
+//
