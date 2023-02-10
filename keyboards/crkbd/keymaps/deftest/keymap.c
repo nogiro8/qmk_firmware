@@ -155,22 +155,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-    case CTD:
-              if (record->event.pressed) {
-	             ctd_pressed = true;
-		     ctd_pressed_time = record->event.time;
-		     register_code(KC_LCTL);
-              } else {
-		     unregister_code(KC_LCTL);
-	             ctd_pressed = false;
-                     if (TIMER_DIFF_16(record->event.time, ctd_pressed_time) < TAPPING_TERM) {
-                        register_code(KC_TAB); // for macOS
-		        unregister_code(KC_TAB);
-		     }
-	      }
+  case CTD:
+    if (record->event.pressed) {
+      ctd_pressed = true;
+      ctd_pressed_time = record->event.time;
+      register_code(KC_LCTL);
+    } else {
+      unregister_code(KC_LCTL);
+      ctd_pressed = false;
+      if (TIMER_DIFF_16(record->event.time, ctd_pressed_time) < TAPPING_TERM) {
+        register_code(KC_TAB); // for macOS
+        unregister_code(KC_TAB);
+      }
+    }
 
-			    		
-              return false;
+    return false;
 
     case KC_ESC:
               if (record->event.pressed) {
@@ -193,8 +192,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 					      if(ctd_pressed){
 						      register_code(KC_LCTL);
 					      }
-
 				      }
+				      return false;
+              break;
+            case KC_BSLS:
+				      if (record->event.pressed){
+					      //unregister_code(KC_LCTL);
+                register_code(KC_RBRC);
+				      }else{
+                unregister_code(KC_RBRC);
+					      if(ctd_pressed){ register_code(KC_LCTL);}
+              }
 				      return false;
 				      break;
 
