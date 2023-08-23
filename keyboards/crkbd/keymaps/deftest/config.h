@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TAPPING_FORCE_HOLD
 #define TAPPING_TERM 195
+//#define TAPPING_TERM 300
 
 #ifdef RGBLIGHT_ENABLE
     #define RGBLIGHT_EFFECT_BREATHING
@@ -53,6 +54,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // add
 #define PERMISSIVE_HOLD //TAPPING_TERM以内にHOLDに設定されたキーを押しても、TAPとみなさずHOLD扱いする
 #define RETRO_TAPPING
-#define COMBO_COUNT 3
+#define COMBO_COUNT 4
 #define COMBO_TERM 50
 #define LEADER_TIMEOUT 300

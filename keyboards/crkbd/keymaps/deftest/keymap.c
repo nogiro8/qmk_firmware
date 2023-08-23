@@ -32,10 +32,11 @@ enum custom_keycodes {
   ADJUST,
   CTD,
 };
-enum combos { DF_LANG2,
+enum combos { 
+  DF_LANG2,
   JK_LANG1,
   FJ_LEAD,
-  JJ_ESC,
+  ALFRED,
 
 };
 
@@ -43,10 +44,12 @@ enum combos { DF_LANG2,
 const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM jk_combo[] = {KC_J, KC_K, COMBO_END};
 const uint16_t PROGMEM fj_combo[] = {KC_F, KC_J, COMBO_END};
+const uint16_t PROGMEM al_combo[] = {KC_A, KC_L, COMBO_END};
 combo_t key_combos[COMBO_COUNT] = {
   [DF_LANG2] = COMBO(df_combo, KC_LNG2),
   [JK_LANG1] = COMBO(jk_combo, KC_LNG1),
   [FJ_LEAD] = COMBO(fj_combo, KC_LEAD),
+  [ALFRED] = COMBO(al_combo, LCTL(LALT(KC_A))),
 };
 // combo
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
